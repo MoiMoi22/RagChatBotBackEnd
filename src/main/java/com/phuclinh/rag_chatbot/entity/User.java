@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "[user]") // 👈 escape từ khóa
+@Table(name = "[user]") // escape từ khóa
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,8 +23,10 @@ public class User {
 
     private String fullName;
 
+    private String email;
+
     @ManyToOne
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = true)
     private Department department;
 
     @ManyToOne
@@ -33,4 +35,6 @@ public class User {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    private Boolean status;
 }
