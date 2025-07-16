@@ -3,7 +3,7 @@ package com.phuclinh.rag_chatbot.controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.phuclinh.rag_chatbot.dto.LoginRequest;
+import com.phuclinh.rag_chatbot.dto.LoginRequestDTO;
 import com.phuclinh.rag_chatbot.util.JwtUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +19,8 @@ public class AuthController {
     AuthenticationManager authenticationManager;
     @Autowired
     JwtUtil jwtUtil;
-    @PostMapping("/authenticate")    
-    public String generateToken(@RequestBody LoginRequest loginReq ){
-                    System.out.println(1);
+    @PostMapping("/auth/login")    
+    public String generateToken(@RequestBody LoginRequestDTO loginReq ){
         try{
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginReq.getUsername(), loginReq.getPassword())
