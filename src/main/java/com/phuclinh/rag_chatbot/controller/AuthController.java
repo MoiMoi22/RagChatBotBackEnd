@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
@@ -20,15 +21,22 @@ public class AuthController {
     JwtUtil jwtUtil;
     @PostMapping("/authenticate")    
     public String generateToken(@RequestBody LoginRequest loginReq ){
+                    System.out.println(1);
         try{
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginReq.getUsername(), loginReq.getPassword())
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginReq.getUsername(), loginReq.getPassword())
             );
-        String token = jwtUtil.generateToken(loginReq.getUsername());
-        return token;
+            String token = jwtUtil.generateToken(loginReq.getUsername());
+            return token;
         }
         catch(Exception e){
             throw e;
         }
+
     }
+    @GetMapping("/test")
+    public String test() {
+        return "Hello";
+    }
+    
 }

@@ -1,7 +1,6 @@
 package com.phuclinh.rag_chatbot.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,28 +12,30 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.phuclinh.rag_chatbot.filter.JwtAuthFilter;
 import com.phuclinh.rag_chatbot.service.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig{
+    @Autowired
+    JwtAuthFilter jwtAuthFilter;
+    @Autowired
+    CustomUserDetailsService customUserDetailsService;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth->
             auth.requestMatchers("/authenticate").permitAll()
-            .anyRequest().authenticated())
-            .httpBasic(withDefaults());
+            .anyRequest().authenticated());
+            http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
-    }
-    @Bean
-    public CustomUserDetailsService customUserDetailsService(){
-        return new CustomUserDetailsService();
     }
     @Bean
     public AuthenticationManager authenticationManager(CustomUserDetailsService customUserDetailsService,

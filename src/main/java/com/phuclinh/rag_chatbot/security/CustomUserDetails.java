@@ -21,7 +21,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Bạn có thể map role từ user nếu có:
+        // Map role từ user
         return Collections.emptyList(); // hoặc List.of(new SimpleGrantedAuthority("ROLE_USER"))
     }
 
