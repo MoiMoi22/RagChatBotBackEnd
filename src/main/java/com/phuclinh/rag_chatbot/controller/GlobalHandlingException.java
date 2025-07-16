@@ -1,11 +1,14 @@
 package com.phuclinh.rag_chatbot.controller;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,6 +58,18 @@ public class GlobalHandlingException {
                 LocalDateTime.now()
         );
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+            ErrorResponseDTO response = new ErrorResponseDTO(
+                    HttpStatus.FORBIDDEN.value(),
+                    HttpStatus.FORBIDDEN.getReasonPhrase(),
+                    ex.getMessage(),
+                    request.getRequestURI(),
+                    LocalDateTime.now()
+            );
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(Exception.class)

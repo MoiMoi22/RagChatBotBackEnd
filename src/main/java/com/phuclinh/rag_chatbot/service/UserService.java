@@ -1,10 +1,13 @@
 package com.phuclinh.rag_chatbot.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.phuclinh.rag_chatbot.dto.CreateUserDTO;
+import com.phuclinh.rag_chatbot.dto.UserDTO;
 import com.phuclinh.rag_chatbot.entity.Department;
 import com.phuclinh.rag_chatbot.entity.Role;
 import com.phuclinh.rag_chatbot.entity.User;
@@ -51,4 +54,31 @@ public class UserService {
 
         userRepository.save(user);
     }
+        public UserDTO getUserForViewing(String requestedUsername, Authentication auth) {
+        String currentUsername = auth.getName();
+        // boolean isAdmin = auth.getAuthorities().stream()
+        //         .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+
+        // if (isAdmin || currentUsername.equals(requestedUsername)) {
+            if(currentUsername.equals(requestedUsername)){
+                User user = userRepository.findByUsername(requestedUsername)
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy user"));
+                return mapToDto(user);
+            }
+            else {
+                throw new AccessDeniedException("Bạn không có quyền xem thông tin user này");
+            }
+    }
+
+    private UserDTO mapToDto(User user) {
+    return new UserDTO(
+        user.getId(),
+        user.getUsername(),
+        user.getFullName(),
+        user.getEmail(),
+        user.getRole() != null ? user.getRole().getId() : null,
+        user.getDepartment() != null ? user.getDepartment().getId() : null,
+        user.getCreatedAt()
+    );
+}
 }
