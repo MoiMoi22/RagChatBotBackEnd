@@ -17,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.phuclinh.rag_chatbot.filter.JwtAuthFilter;
 import com.phuclinh.rag_chatbot.service.CustomUserDetailsService;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig{
@@ -24,15 +26,27 @@ public class SecurityConfig{
     JwtAuthFilter jwtAuthFilter;
     @Autowired
     CustomUserDetailsService customUserDetailsService;
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth->
-            auth.requestMatchers("/auth/login").permitAll()
-            .anyRequest().authenticated());
-            http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable)
+        .httpBasic(AbstractHttpConfigurer::disable) 
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/auth/login").permitAll()
+            .anyRequest().authenticated()
+        )
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint((request, response, authException) -> {
+                response.setContentType("application/json");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"message\": \"Unauthorized: " + authException.getMessage() + "\"}");
+            })
+        );
+
+    return http.build();
+}
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();

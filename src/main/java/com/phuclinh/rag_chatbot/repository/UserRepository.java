@@ -10,6 +10,7 @@ import com.phuclinh.rag_chatbot.entity.User;
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
 
     Optional<User> findByUsername(String username); // Đăng nhập
+    Optional<User> findByEmail(String email); // Cập nhật thông tin
     Boolean existsByEmail(String mail); // Quên mật khẩu
     Boolean existsByUsername(String username);
     void deleteById(Long id); // đã có sẵn

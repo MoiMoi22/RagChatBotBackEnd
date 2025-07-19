@@ -6,7 +6,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Document {
@@ -14,22 +15,22 @@ public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(columnDefinition = "NVARCHAR(255)")
     private String title;
-
+    @Column(columnDefinition = "NVARCHAR(255)")
     private String fileName;
-
+    @Column(columnDefinition = "NVARCHAR(255)")
     private String fileUrl;
-
+    @Column(columnDefinition = "NVARCHAR(255)")
     private String fileType;
 
-    private LocalDateTime uploadedAt;
+    private LocalDateTime uploadedAt = LocalDateTime.now();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by")
     private User uploadedBy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
 }

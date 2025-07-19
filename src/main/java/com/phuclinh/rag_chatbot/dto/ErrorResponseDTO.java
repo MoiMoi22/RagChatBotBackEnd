@@ -10,11 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorResponseDTO {
-
     private int status;
     private String error;
-    private String message;
+    private Object message; // 🔄 đổi từ String sang Map
     private String path;
     private LocalDateTime timestamp;
-    
 }

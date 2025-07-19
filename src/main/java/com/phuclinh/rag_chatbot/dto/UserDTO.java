@@ -2,6 +2,8 @@ package com.phuclinh.rag_chatbot.dto;
 
 import java.time.LocalDateTime;
 
+import com.phuclinh.rag_chatbot.enums.UserStatus;
+
 import lombok.*;
 
 @Data
@@ -23,4 +25,5 @@ public class UserDTO {
 
     private LocalDateTime createdAt;
     
+    private UserStatus status;
 }

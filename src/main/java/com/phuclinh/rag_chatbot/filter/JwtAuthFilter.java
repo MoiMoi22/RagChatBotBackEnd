@@ -1,6 +1,7 @@
 package com.phuclinh.rag_chatbot.filter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -10,6 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.phuclinh.rag_chatbot.exception.InvalidTokenException;
 import com.phuclinh.rag_chatbot.security.CustomUserDetails;
 import com.phuclinh.rag_chatbot.service.CustomUserDetailsService;
 import com.phuclinh.rag_chatbot.util.JwtUtil;
@@ -36,22 +38,39 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token=null;
         String username=null;
 
-        if(header!=null && header.startsWith("Bearer ")){
-            token = header.substring(7);
-            username = jwtUtil.extractUsername(token);
-        }
-
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            
-            CustomUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(username);
-                
-            if(jwtUtil.isTokenValid(token, username, customUserDetails)){
-
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(customUserDetails,null, customUserDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+        try {
+            if (header != null && header.startsWith("Bearer ")) {
+                token = header.substring(7);
+                username = jwtUtil.extractUsername(token);
             }
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                if (jwtUtil.isTokenValid(token, username, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else {
+                    throw new InvalidTokenException("Token không hợp lệ hoặc đã hết hạn");
+                }
+            }
+            filterChain.doFilter(request, response);
+
         }
-        filterChain.doFilter(request, response);
+        catch (InvalidTokenException ex) {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; charset=UTF-8");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+            String json = String.format(
+                "{\"timestamp\":\"%s\",\"status\":401,\"error\":\"Unauthorized\",\"message\":\"%s\",\"path\":\"%s\"}",
+                LocalDateTime.now(),
+                ex.getMessage(),
+                request.getRequestURI()
+            );
+            response.getWriter().write(json);
+        }
+
     }
 }
