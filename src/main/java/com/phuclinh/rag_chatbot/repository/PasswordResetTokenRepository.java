@@ -1,12 +1,14 @@
 package com.phuclinh.rag_chatbot.repository;
 
-import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.phuclinh.rag_chatbot.entity.PasswordResetToken;
+import com.phuclinh.rag_chatbot.entity.User;
 
-public interface PasswordResetTokenRepository {
-   List<PasswordResetToken> findAllPasswordResetToken(); // Xem danh sách (chưa quan trọng)
-   void addPasswordResetToken(PasswordResetToken pwdToken); // Thêm
-//    void deletePasswordResetTokens(List<PasswordResetToken> listPwdToken); // Xóa (bớt lưu trữ) -> có thể không tốt
+public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long>{
+    Optional<PasswordResetToken> findByToken(String token);
+    void deleteByUser(User user);
+
 } 
-// Để sau

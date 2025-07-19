@@ -9,7 +9,6 @@ import com.phuclinh.rag_chatbot.dto.ChangePasswordRequestDTO;
 import com.phuclinh.rag_chatbot.dto.CreateUserDTO;
 import com.phuclinh.rag_chatbot.dto.UpdateUserRequestDTO;
 import com.phuclinh.rag_chatbot.dto.UserDTO;
-import com.phuclinh.rag_chatbot.enums.UserStatus;
 import com.phuclinh.rag_chatbot.exception.BadRequestException;
 import com.phuclinh.rag_chatbot.service.UserService;
 

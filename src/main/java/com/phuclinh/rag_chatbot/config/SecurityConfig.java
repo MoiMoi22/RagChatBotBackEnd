@@ -33,7 +33,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable) 
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/login").permitAll()
+            .requestMatchers("/api/auth/**").permitAll()
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

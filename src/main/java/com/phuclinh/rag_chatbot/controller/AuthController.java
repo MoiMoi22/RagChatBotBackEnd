@@ -1,56 +1,50 @@
 package com.phuclinh.rag_chatbot.controller;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.phuclinh.rag_chatbot.dto.ApiResponseDTO;
 import com.phuclinh.rag_chatbot.dto.LoginRequestDTO;
+import com.phuclinh.rag_chatbot.service.PasswordResetService;
 import com.phuclinh.rag_chatbot.service.UserService;
 import com.phuclinh.rag_chatbot.util.JwtUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    JwtUtil jwtUtil;
-    @Autowired
-    UserService userService;
-    @PostMapping("/login")    
-    public String generateToken(@RequestBody LoginRequestDTO loginReq ){
-        try{
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginReq.getUsername(), loginReq.getPassword())
-            );
-            String token = jwtUtil.generateToken(loginReq.getUsername());
-            return token;
-        }
-        catch(Exception e){
-            throw e;
-        }
 
+    private final AuthenticationManager authenticationManager;
+    private final PasswordResetService passwordResetService;
+    private final JwtUtil jwtUtil;
+    private final UserService userService;
+
+    @PostMapping("/login")
+    public String generateToken(@RequestBody LoginRequestDTO loginReq) {
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(loginReq.getUsername(), loginReq.getPassword())
+        );
+        return jwtUtil.generateToken(loginReq.getUsername());
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
+    public ResponseEntity<ApiResponseDTO> logout() {
         String message = userService.logout();
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDTO(200, message));
+        return ResponseEntity.ok(new ApiResponseDTO(HttpStatus.OK.value(), message));
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "Hello";
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponseDTO> forgotPassword(@RequestParam String email) {
+        passwordResetService.createPasswordResetToken(email);
+        return ResponseEntity.ok(new ApiResponseDTO(HttpStatus.OK.value(), "Hướng dẫn đặt lại mật khẩu đã được gửi đến email."));
     }
-    
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponseDTO> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
+        passwordResetService.resetPassword(token, newPassword);
+        return ResponseEntity.ok(new ApiResponseDTO(HttpStatus.OK.value(), "Mật khẩu đã được thay đổi."));
+    }
 }
