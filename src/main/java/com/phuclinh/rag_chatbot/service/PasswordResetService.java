@@ -55,6 +55,10 @@ public class PasswordResetService {
         }
 
         User user = resetToken.getUser();
+        if (user == null || !userRepository.existsById(user.getId())) {
+            throw new InvalidTokenException("Người dùng không còn tồn tại");
+        }
+
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setLastChangeAt(LocalDateTime.now());
         userRepository.save(user);

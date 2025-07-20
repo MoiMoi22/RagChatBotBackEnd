@@ -2,6 +2,7 @@ package com.phuclinh.rag_chatbot.controller;
 
 import com.phuclinh.rag_chatbot.dto.ApiResponseDTO;
 import com.phuclinh.rag_chatbot.dto.LoginRequestDTO;
+import com.phuclinh.rag_chatbot.dto.ResetPasswordRequestDTO;
 import com.phuclinh.rag_chatbot.service.PasswordResetService;
 import com.phuclinh.rag_chatbot.service.UserService;
 import com.phuclinh.rag_chatbot.util.JwtUtil;
@@ -43,8 +44,9 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponseDTO> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
-        passwordResetService.resetPassword(token, newPassword);
+    public ResponseEntity<ApiResponseDTO> resetPassword(@RequestBody ResetPasswordRequestDTO request) {
+        passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
         return ResponseEntity.ok(new ApiResponseDTO(HttpStatus.OK.value(), "Mật khẩu đã được thay đổi."));
     }
+
 }
