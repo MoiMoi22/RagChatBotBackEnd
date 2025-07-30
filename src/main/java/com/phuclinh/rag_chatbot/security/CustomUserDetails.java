@@ -1,5 +1,6 @@
 package com.phuclinh.rag_chatbot.security;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -8,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.phuclinh.rag_chatbot.entity.User;
 
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails, Principal {
     private final User user;
 
     public CustomUserDetails(User user) {
@@ -53,5 +54,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return user.getUsername(); // phải là "admin"
     }
 }

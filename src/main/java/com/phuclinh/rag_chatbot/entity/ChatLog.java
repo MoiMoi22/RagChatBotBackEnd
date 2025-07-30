@@ -25,7 +25,7 @@ public class ChatLog {
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String source_documents;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)

@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.phuclinh.rag_chatbot.entity.User;
+import com.phuclinh.rag_chatbot.exception.InvalidTokenException;
 import com.phuclinh.rag_chatbot.repository.UserRepository;
 import com.phuclinh.rag_chatbot.security.CustomUserDetails;
 
@@ -17,7 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+                .orElseThrow(() -> new InvalidTokenException("Không tìm thấy username"));
         return new CustomUserDetails(user);
     }
 }

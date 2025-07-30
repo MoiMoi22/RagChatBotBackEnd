@@ -1,16 +1,11 @@
 package com.phuclinh.rag_chatbot.repository;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.phuclinh.rag_chatbot.entity.Document;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface DocumentRepository {
-    List<Document> findAllDocuments(); // Liệt kê tất cả tài liệu (Phát triển thêm liệt kê theo phòng ban)
-    Optional<Document> getDocument(String file);// Cần nghiên cứu thêm
-    void addDocument(Document doc); // Thêm tài liệu
-    void updateDocument(Document doc); // Cập nhật tài liệu
-    void deleteDocument(); // Phát triển sau
+@Repository
+public interface DocumentRepository extends JpaRepository<Document, Long>, DocumentRepositoryCustom {
+    // Có thể thêm query đơn giản nếu cần, ví dụ:
+    // List<Document> findByDepartmentId(Long departmentId);
 }
-
-// Cần review lại để đưa ra phương án giải quyết

@@ -1,16 +1,16 @@
 package com.phuclinh.rag_chatbot.repository;
 
+import com.phuclinh.rag_chatbot.entity.ChatLog;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
 import java.util.Optional;
 
-import com.phuclinh.rag_chatbot.entity.ChatLog;
+public interface ChatLogRepository extends JpaRepository<ChatLog, Long>, ChatLogRepositoryCustom {
 
-public interface ChatLogRepository {
-    List<ChatLog> findAllChatLogs();
-    Optional<ChatLog> geChatLog(String userId, String departmentId); // Xem lại lịch sử chat của user
-    void addChatLog(ChatLog chatLog); // Tạo chat log mới
-    void updateChatLog(ChatLog chatLog); // Có thể không cần
-    void deleteChatLog(); // Có thể không cần
+    List<ChatLog> findAll(); // kế thừa sẵn từ JpaRepository
+
+    // Tùy theo thiết kế entity, bạn có thể dùng tên cột thực tế
+    Optional<ChatLog> findByUserIdAndDepartmentId(Long userId, Long departmentId); 
 }
 
-// ==> Nằm trong thành phần cơ bản cần được hoàn thiện

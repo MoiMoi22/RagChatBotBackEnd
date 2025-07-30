@@ -25,6 +25,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     JwtUtil jwtUtil;
+    
     @Autowired
     CustomUserDetailsService customUserDetailsService;
     
@@ -38,39 +39,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token=null;
         String username=null;
 
-        try {
-            if (header != null && header.startsWith("Bearer ")) {
-                token = header.substring(7);
-                username = jwtUtil.extractUsername(token);
-            }
-
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-                if (jwtUtil.isTokenValid(token, username, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                } else {
-                    throw new InvalidTokenException("Token không hợp lệ hoặc đã hết hạn");
-                }
-            }
-            filterChain.doFilter(request, response);
-
-        }
-        catch (InvalidTokenException ex) {
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json; charset=UTF-8");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-            String json = String.format(
-                "{\"timestamp\":\"%s\",\"status\":401,\"error\":\"Unauthorized\",\"message\":\"%s\",\"path\":\"%s\"}",
-                LocalDateTime.now(),
-                ex.getMessage(),
-                request.getRequestURI()
-            );
-            response.getWriter().write(json);
+        if (header != null && header.startsWith("Bearer ")) {
+            token = header.substring(7);
+            username = jwtUtil.extractUsername(token);
         }
 
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+            if (jwtUtil.isTokenValid(token, username, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                throw new InvalidTokenException("Token không hợp lệ hoặc đã hết hạn");
+            }
+        }
+        filterChain.doFilter(request, response);
     }
 }
