@@ -2,9 +2,10 @@ package com.phuclinh.rag_chatbot.security;
 
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.phuclinh.rag_chatbot.entity.User;
@@ -23,7 +24,7 @@ public class CustomUserDetails implements UserDetails, Principal {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Map role từ user
-        return Collections.emptyList(); // hoặc List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        return List.of(new SimpleGrantedAuthority(user.getRole().getName()));
     }
 
     @Override

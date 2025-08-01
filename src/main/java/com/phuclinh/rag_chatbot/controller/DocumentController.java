@@ -9,9 +9,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.phuclinh.rag_chatbot.dto.ApiResponseDTO;
+import com.phuclinh.rag_chatbot.dto.DocumentUploadRequestDTO;
 import com.phuclinh.rag_chatbot.service.DocumentService;
 
 @Controller
@@ -21,13 +23,22 @@ public class DocumentController {
     private DocumentService documentService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam MultipartFile file,
-                                        @RequestParam Long departmentId,
-                                        Authentication authentication) throws IOException {
+    public ResponseEntity<?> uploadFile(
+            @RequestPart("metadata") DocumentUploadRequestDTO metadata,
+            @RequestPart("file") MultipartFile file,
+            Authentication authentication) throws IOException {
+
         String username = authentication.getName();
-        String fileUrl = documentService.uploadDocument(file, username, departmentId);
-        String message = "Tải lên thành công: " + fileUrl;
-        return ResponseEntity.ok(new ApiResponseDTO(200, message));
+
+        String fileUrl = documentService.uploadDocument(
+            file,
+            metadata.getTitle(),
+            metadata.getFileName(),
+            username,
+            metadata.getDepartmentId()
+        );
+
+        return ResponseEntity.ok(new ApiResponseDTO(200, "Tải lên thành công: " + fileUrl));
     }
 
 

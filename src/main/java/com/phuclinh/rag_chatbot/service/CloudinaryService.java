@@ -32,9 +32,10 @@ public class CloudinaryService {
             if (!isAllowedType(contentType)) {
                 throw new BadRequestException("Chỉ cho phép upload tài liệu văn bản (PDF, DOCX, TXT...)");
             }
-
+            String originalFilename = file.getOriginalFilename(); // "abc.pdf"
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             // Tạo file tạm
-            File tempFile = File.createTempFile("upload-", ".docx");
+            File tempFile = File.createTempFile("upload-", extension);
             Files.write(tempFile.toPath(), file.getBytes());
 
             // Upload file tạm lên Cloudinary

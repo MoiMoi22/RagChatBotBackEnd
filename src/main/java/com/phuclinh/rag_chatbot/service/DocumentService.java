@@ -29,7 +29,8 @@ public class DocumentService {
     @Autowired
     private UserRepository userRepository;    
 
-    public String uploadDocument(MultipartFile file, String username, Long departmentId) throws IOException {
+    public String uploadDocument(MultipartFile file, String title, String fileName,
+                             String username, Long departmentId) throws IOException {
         User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new ResourceNotFoundException("User không tồn tại"));
         String role = user.getRole().getName(); // giả định là "ADMIN", "MANAGER", "EMPLOYEE"
@@ -54,15 +55,10 @@ public class DocumentService {
         Department department = departmentRepository.findById(departmentId)
         .orElseThrow(() -> new ResourceNotFoundException("Phòng ban không tồn tại"));
 
-        String originalName = file.getOriginalFilename();
-        String nameWithoutExtension = originalName != null && originalName.contains(".")
-            ? originalName.substring(0, originalName.lastIndexOf('.'))
-            : originalName;
-
         // Lưu document
         Document doc = new Document();
-        doc.setTitle(nameWithoutExtension); // Không có đuôi .docx
-        doc.setFileName(nameWithoutExtension); // Không có đuôi
+        doc.setTitle(title); // Không có đuôi .docx
+        doc.setFileName(fileName); // Không có đuôi
         doc.setFileType(file.getContentType()); // vẫn lưu MIME type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
         doc.setFileUrl(fileUrl);
         doc.setUploadedBy(user);
