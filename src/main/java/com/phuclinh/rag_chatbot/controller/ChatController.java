@@ -31,6 +31,10 @@ public class ChatController {
     public String getMethodName() {
         return "chat";
     }
+    @GetMapping("/login")
+    public String getMethodName1() {
+        return "login";
+    }
     @GetMapping("/upload-demo")
     public String uploadFile() {
         return "upload";
@@ -48,11 +52,18 @@ public void sendMessage(@Valid @Payload ChatMessageRequestDTO message, Authentic
     System.out.println("Nhận message từ " + username);
 
     ChatMessageResponseDTO response = chatService.processMessage(message.getQuestion(), username);
+    System.out.println(response.sourceAsString());
 
+//     ChatMessageResponseDTO tempResponse = new ChatMessageResponseDTO(
+//     "Đây là câu trả lời từ chatbot",
+//     List.of("https://res.cloudinary.com/dadyh5hjx/raw/upload/v1754037304/mllyckal2miv5xq3eqop.pdf", "Nguồn 2", "Nguồn 3"),
+//     LocalDateTime.now()
+// );
     messagingTemplate.convertAndSendToUser(
         username,
         "/queue/messages",
         response
+        //  tempResponse
     );
 }
 

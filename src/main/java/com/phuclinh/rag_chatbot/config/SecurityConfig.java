@@ -33,7 +33,12 @@ public class SecurityConfig{
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/ws-chat/**", "/chat-demo","/upload-demo", "/webjars/**", "/static/**").permitAll()
+                .requestMatchers("/api/auth/**", "/ws-chat/**", "/chat-demo","/login", "/upload-demo", "/js/**",
+                                "/css/**",
+                                "/images/**",
+                                "/webjars/**",
+                                "/favicon.ico")
+                .permitAll()
                 .anyRequest().authenticated()
             )
             // Thêm JWT filter trước UsernamePasswordAuthenticationFilter

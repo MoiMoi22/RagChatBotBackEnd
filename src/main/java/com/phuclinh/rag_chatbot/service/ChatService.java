@@ -40,25 +40,26 @@ public class ChatService {
 
     @Transactional
     public ChatMessageResponseDTO processMessage(String question, String username) {
-        // 1. Gọi RAG API
-        RagApiResponse ragResponse = callRagApi(question);
+        // Lấy user và departmentId
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User không tồn tại"));
+        Long departmentId = user.getDepartment().getId();
 
-        // 2. Lấy các fileUrl từ documentId
-        List<Long> docIds = ragResponse.getSourceDocuments().stream()
-                .map(Long::valueOf)
-                .toList();
+        // Gọi RAG API có truyền departmentId
+        RagApiResponse ragResponse = callRagApi(question, departmentId);
+
+        // Lấy các fileUrl từ documentId nếu có
+        List<Long> docIds = ragResponse.getSourceDocuments() == null ? List.of() :
+            ragResponse.getSourceDocuments().stream()
+                    .map(Long::valueOf)
+                    .toList();
 
         List<String> fileUrls = documentRepository.findByIdIn(docIds).stream()
                 .map(Document::getFileUrl)
                 .toList();
 
-        // 3. Lấy thời gian hiện tại
+        // Lưu chat log
         LocalDateTime now = LocalDateTime.now();
-
-        // 4. Lưu chat log
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User không tồn tại"));
-
         ChatLog chatLog = new ChatLog();
         chatLog.setQuestion(question);
         chatLog.setAnswer(ragResponse.getAnswer());
@@ -69,7 +70,6 @@ public class ChatService {
 
         chatLogRepository.save(chatLog);
 
-        // 5. Trả về response cho client
         return new ChatMessageResponseDTO(
                 ragResponse.getAnswer(),
                 fileUrls,
@@ -77,15 +77,19 @@ public class ChatService {
         );
     }
 
-    private RagApiResponse callRagApi(String question) {
+
+    private RagApiResponse callRagApi(String question, Long departmentId) {
         String apiUrl = "http://localhost:8000/ask";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        Map<String, String> request = Map.of("question", question);
+        Map<String, Object> request = Map.of(
+            "question", question,
+            "department_id", departmentId
+        );
 
-        HttpEntity<Map<String, String>> entity = new HttpEntity<>(request, headers);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
 
         ResponseEntity<RagApiResponse> response = restTemplate.postForEntity(apiUrl, entity, RagApiResponse.class);
 
@@ -95,4 +99,5 @@ public class ChatService {
 
         return response.getBody();
     }
+
 }

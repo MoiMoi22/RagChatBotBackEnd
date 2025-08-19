@@ -15,6 +15,9 @@ public class ChatMessageResponseDTO {
     private LocalDateTime timestamp; // LocalDateTime để đồng bộ với ChatLog
 
     public String sourceAsString() {
+        if(sourceDocuments == null){
+            return "Không có doc đi kèm";
+        }
         return String.join("\n", sourceDocuments);
     }
 }

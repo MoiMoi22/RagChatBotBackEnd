@@ -13,6 +13,7 @@ import com.phuclinh.rag_chatbot.exception.ResourceNotFoundException;
 import com.phuclinh.rag_chatbot.repository.PasswordResetTokenRepository;
 import com.phuclinh.rag_chatbot.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,6 +25,7 @@ public class PasswordResetService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void createPasswordResetToken(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));

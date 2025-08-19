@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Đăng nhập - Chatbot nội bộ</title>
+    <!-- Sử dụng Bootstrap để tận dụng các lớp tiện ích -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        crossorigin="anonymous"
+    />
+            <!-- integrity="sha384-uW9KrtCvqiRSQKp0w0M2i3l8lzhwIltXszEeHKb5XhV8ULwQXwHdq3Zs2N2q5Rmm" -->
+    <!-- CSS tùy chỉnh cho hiệu ứng Liquid Glass -->
+    <link th:href="@{/css/login.css}" rel="stylesheet" />
+</head>
+<body>
+    <!-- Các khối màu sắc động làm nền phía sau -->
+    <div class="background">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Hộp đăng nhập với hiệu ứng "glass" -->
+    <div class="login-glass">
+        <h3>Đăng nhập</h3>
+        <form id="loginForm" autocomplete="off">
+            <div class="mb-3">
+                <label for="username" class="form-label">Email / Tên đăng nhập</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    placeholder="Nhập email hoặc tên đăng nhập"
+                    required
+                />
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    placeholder="Nhập mật khẩu"
+                    required
+                />
+            </div>
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary">Đăng nhập</button>
+            </div>
+        </form>
+        <div id="loginError" class="alert alert-danger mt-3 d-none"></div>
+    </div>
+
+    <!-- JavaScript xử lý đăng nhập -->
+    <script th:src="@{/js/login.js}"></script>
+</body>
+</html>

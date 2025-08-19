@@ -1,0 +1,148 @@
+/*
+ * Giao diện đăng nhập với hiệu ứng Liquid Glass.
+ * Sử dụng các khối màu động và thẻ backdrop-filter để tạo cảm giác kính mờ.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+/* Reset margin/padding và font toàn cục */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  /* Màu nền cơ bản phía sau các blob để lấp đầy khoảng trống */
+  background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
+}
+
+/* Vùng chứa nền động */
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  /* Đặt z-index bằng 0 để các blob hiển thị giữa nền gradient và hộp glass */
+  z-index: 0;
+}
+
+/* Các blob màu chuyển động mờ tạo cảm giác chất lỏng */
+.background span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.65;
+  animation: float linear infinite;
+}
+
+/* Tuỳ biến từng blob về kích thước, màu sắc, vị trí và thời gian */
+.background span:nth-child(1) {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle at center, rgba(0, 176, 255, 0.8), rgba(0, 86, 169, 0.4));
+  top: -15%;
+  left: 65%;
+  animation-duration: 25s;
+}
+
+.background span:nth-child(2) {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle at center, rgba(255, 0, 128, 0.8), rgba(139, 0, 73, 0.4));
+  top: 50%;
+  left: -20%;
+  animation-duration: 30s;
+}
+
+.background span:nth-child(3) {
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle at center, rgba(255, 184, 0, 0.8), rgba(166, 99, 0, 0.4));
+  top: 85%;
+  left: 40%;
+  animation-duration: 35s;
+}
+
+/* Định nghĩa chuyển động của các blob: di chuyển nhẹ theo trục Y và xoay tròn */
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-60px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+/* Hộp chứa form với hiệu ứng kính mờ */
+.login-glass {
+  position: relative;
+  z-index: 1;
+  max-width: 380px;
+  margin: 10vh auto;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+.login-glass h3 {
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Input trong suốt với đường gạch dưới */
+.login-glass .form-control {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 0;
+  color: #ffffff;
+  padding: 0.75rem 0;
+  font-weight: 400;
+}
+
+.login-glass .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.login-glass .form-label {
+  color: #ffffff;
+  font-weight: 400;
+}
+
+/* Nút đăng nhập màu sáng trên nền tối */
+.login-glass .btn-primary {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #1f3a93;
+  border: none;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.login-glass .btn-primary:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: #1f3a93;
+}
+
+/* Thông báo lỗi tuỳ chỉnh với màu đỏ nổi bật nhưng hài hoà với nền */
+#loginError {
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}

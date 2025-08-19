@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Internal Chatbot</title>
+    <!-- Nhúng file CSS để định dạng giao diện chat -->
+    <link rel="stylesheet" href="\css\chat.css" />
+    <!-- SockJS và STOMP phục vụ cho kết nối WebSocket -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  </head>
+  <body>
+    <!-- Phần tiêu đề với nút đăng xuất -->
+    <header>
+      <div class="title">Internal Chatbot</div>
+      <button id="logoutBtn">Log Out</button>
+    </header>
+
+    <!-- Vùng hiển thị nội dung tin nhắn -->
+    <main class="chat-container" id="chatContainer"></main>
+
+    <!-- Khu vực nhập liệu và gửi tin nhắn -->
+    <form id="chatForm" class="input-area">
+      <textarea
+        id="messageInput"
+        placeholder="Type your message..."
+        autocomplete="off"
+        rows="1"
+      ></textarea>
+      <button type="submit" aria-label="Send message">
+        <!-- Mũi tên gửi tin nhắn (icon SVG) -->
+        <svg
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+        >
+          <path
+            d="M2 21l21-9L2 3v7l15 2-15 2v7z"
+            fill="#ffffff"
+          ></path>
+        </svg>
+      </button>
+    </form>
+
+    <!-- Script logic của ứng dụng chat -->
+    <script src="\js\chat.js"></script>
+  </body>
+</html>
