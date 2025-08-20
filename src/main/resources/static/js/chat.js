@@ -11,6 +11,55 @@
 
 let stompClient = null;
 
+// Biến toàn cục để lưu trữ hàng đợi "typing indicator" và tham chiếu
+// sử dụng khi cần loại bỏ hiệu ứng. Khi người dùng gửi câu hỏi, một
+// bong bóng chat đặc biệt sẽ được tạo ra hiển thị thông báo “RAG đang trích
+// xuất” với các chấm nhấp nháy. Khi bot gửi câu trả lời, bong bóng này
+// sẽ được xóa bỏ.
+let typingIndicatorRow = null;
+
+/**
+ * Hiển thị bong bóng “đang trích xuất” trong khu vực chat. Nếu đã có một
+ * bong bóng chỉ báo đang hoạt động, nó sẽ được loại bỏ trước khi tạo mới.
+ */
+function showTypingIndicator() {
+  const chatContainer = document.getElementById('chatContainer');
+  // Xóa bong bóng typing hiện tại nếu có
+  removeTypingIndicator();
+  // Tạo hàng mới cho bot đang trích xuất
+  const row = document.createElement('div');
+  row.className = 'message-row bot typing-row';
+  const bubble = document.createElement('div');
+  bubble.className = 'message bot typing';
+  // Tạo nội dung: dòng chữ và ba chấm nhấp nháy
+  const textSpan = document.createElement('span');
+  textSpan.textContent = 'RAG đang trích xuất';
+  bubble.appendChild(textSpan);
+  const dotsSpan = document.createElement('span');
+  dotsSpan.className = 'typing-dots';
+  // Tạo ba chấm
+  for (let i = 0; i < 3; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dotsSpan.appendChild(dot);
+  }
+  bubble.appendChild(dotsSpan);
+  row.appendChild(bubble);
+  chatContainer.appendChild(row);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+  typingIndicatorRow = row;
+}
+
+/**
+ * Loại bỏ bong bóng “đang trích xuất” nếu tồn tại.
+ */
+function removeTypingIndicator() {
+  if (typingIndicatorRow && typingIndicatorRow.parentNode) {
+    typingIndicatorRow.parentNode.removeChild(typingIndicatorRow);
+    typingIndicatorRow = null;
+  }
+}
+
 /**
  * Chuyển đổi một chuỗi Markdown đơn giản thành HTML để hiển thị trong bong bóng chat.
  * Hỗ trợ in đậm bằng **...**, xuống dòng và danh sách bắt đầu bằng '-' hoặc '*'.
@@ -95,6 +144,8 @@ function addMessage(sender, text) {
  * @param {Array|undefined} sources Mảng các đối tượng tài liệu nguồn. Mỗi đối tượng có thể chứa thuộc tính `metadata` với các trường như `source`, `file_path`, `path`, `title`, hoặc `file_name`, hoặc có thể có thuộc tính `source` ở cấp cao nhất. Liên kết thực tế được lấy từ các trường này.
  */
 function addBotMessage(answer, sources) {
+  // Khi bot trả lời, hãy xóa chỉ báo gõ phím trước
+  removeTypingIndicator();
   const chatContainer = document.getElementById('chatContainer');
   const row = document.createElement('div');
   row.className = 'message-row bot';
@@ -225,6 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
       messageInput.value = '';
       // Đặt lại chiều cao textarea sau khi gửi
       messageInput.style.height = 'auto';
+      // Hiển thị hiệu ứng đang trích xuất khi người dùng gửi câu hỏi
+      showTypingIndicator();
     }
   });
   // Đăng xuất: xóa token và gọi API logout phía backend
